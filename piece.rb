@@ -1,5 +1,7 @@
+
 class Piece
-  attr_reader :board, :pos, :color
+  attr_accessor :pos
+  attr_reader :board, :color
 
   def initialize(board, pos, color)
     @board = board
@@ -8,8 +10,22 @@ class Piece
   end
 
   def moves
-
   end
+
+  def valid_moves
+    moves.reject { |move| move_into_check?(move) }
+  end
+
+  def move_into_check?(ending_pos)
+    dupped_board = board.dup
+    dupped_board.move!(pos, ending_pos)
+    dupped_board.in_check?(color)
+  end
+
+  def to_s(letter)
+    letter.colorize(color)
+  end
+
 end
 
 class SlidingPiece < Piece
@@ -18,10 +34,12 @@ class SlidingPiece < Piece
     move_dirs.each do |dx, dy|
       a = pos
       a = [a[0] + dx, a[1] + dy]
-      until !a[0].between?(0,7) || !a[1].between?(0,7)
+      until !a[0].between?(0,7) || !a[1].between?(0,7) || board[a]
         result << a
         a = [a[0] + dx, a[1] + dy]
       end
+
+      result << a if a[0].between?(0,7) && a[1].between?(0,7) && board[a].color != color
     end
 
     result
@@ -46,7 +64,7 @@ class Bishop < SlidingPiece
   end
 
   def to_s
-    "B"
+    super "B"
   end
 
 end
@@ -57,7 +75,7 @@ class Rook < SlidingPiece
   end
 
   def to_s
-    "R"
+    super "R"
   end
 
 end
@@ -69,7 +87,7 @@ class Queen < SlidingPiece
   end
 
   def to_s
-    "Q"
+    super "Q"
   end
 
 end
@@ -81,7 +99,7 @@ class Knight < SteppingPiece
   end
 
   def to_s
-    "N"
+    super "N"
   end
 
 end
@@ -93,7 +111,7 @@ class King < SteppingPiece
   end
 
   def to_s
-    "K"
+    super "K"
   end
 
 end
@@ -121,7 +139,7 @@ class Pawn < Piece
   end
 
   def to_s
-    "P"
+    super "P"
   end
 
 

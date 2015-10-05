@@ -1,4 +1,3 @@
-require_relative 'board.rb'
 require 'colorize'
 require_relative "cursorable"
 
@@ -31,14 +30,13 @@ class Display
     elsif (i + j).odd?
       bg = :light_blue
     else
-      bg = :blue
+      bg = :light_black
     end
-    { background: bg, color: :white }
+    { background: bg }
   end
 
   def render
     system("clear")
-    puts "Fill the grid!"
     puts "Arrow keys, WASD, or vim to move, space or enter to confirm."
     build_grid.each { |row| puts row.join }
     nil
@@ -51,7 +49,3 @@ class Display
     end
   end
 end
-
-a = Board.new
-b = Display.new(a)
-b.run
