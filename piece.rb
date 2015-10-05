@@ -1,7 +1,7 @@
 
 class Piece
-  attr_accessor :pos
-  attr_reader :board, :color
+  attr_accessor :board, :pos
+  attr_reader :color
 
   def initialize(board, pos, color)
     @board = board
@@ -26,6 +26,10 @@ class Piece
     letter.colorize(color)
   end
 
+  def on_board?(pos)
+    pos[0].between?(0,7) && pos[1].between?(0,7)
+  end
+
 end
 
 class SlidingPiece < Piece
@@ -34,12 +38,12 @@ class SlidingPiece < Piece
     move_dirs.each do |dx, dy|
       a = pos
       a = [a[0] + dx, a[1] + dy]
-      until !a[0].between?(0,7) || !a[1].between?(0,7) || board[a]
+      while on_board?(a) && board[a].nil?
         result << a
         a = [a[0] + dx, a[1] + dy]
       end
 
-      result << a if a[0].between?(0,7) && a[1].between?(0,7) && board[a].color != color
+      result << a if on_board?(a) && board[a].color != color
     end
 
     result
@@ -51,7 +55,7 @@ class SteppingPiece < Piece
     result = []
     move_dirs.each do |dx, dy|
       new_pos = [pos[0] + dx, pos[1] + dy]
-      result << new_pos if new_pos.all? { |x| x.between?(0, 7) }
+      result << new_pos if on_board?(new_pos)
     end
 
     result

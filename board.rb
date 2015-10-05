@@ -4,24 +4,34 @@ require 'byebug'
 
 class Board
 
-  attr_reader :grid
-
-  def initialize(grid = nil)
-    grid ||= Array.new(8) do |i|
+  def self.new_grid
+    Array.new(8) do |i|
       if i == 1 || i == 6
         color = (i == 1 ? :black : :white)
-        (0..7).inject([]) {|acc, j | acc << Pawn.new(self, [i, j], color)}
+        (0..7).inject([]) {|acc, j | acc << Pawn.new(nil, [i, j], color)}
       elsif i == 0 || i == 7
         color = (i == 0 ? :black : :white)
-        [Rook.new(self, [i, 0], color), Knight.new(self, [i, 1], color), Bishop.new(self, [i, 2], color),
-        Queen.new(self, [i, 3], color), King.new(self, [i, 4], color), Bishop.new(self, [i, 5], color),
-        Knight.new(self, [i, 6], color), Rook.new(self, [i, 7], color)]
+        [Rook.new(nil, [i, 0], color), Knight.new(nil, [i, 1], color), Bishop.new(nil, [i, 2], color),
+        Queen.new(nil, [i, 3], color), King.new(nil, [i, 4], color), Bishop.new(nil, [i, 5], color),
+        Knight.new(nil, [i, 6], color), Rook.new(nil, [i, 7], color)]
       else
         Array.new(8)
       end
     end
+  end
 
+  attr_reader :grid
+
+  def initialize(grid = nil)
+    grid ||= Board.new_grid
     @grid = grid
+    pieces.map {|piece| piece.board = self }
+  end
+
+  def pieces(color = nil)
+    pieces = grid.flatten.reject(&:nil?)
+    pieces = pieces.select { |piece| piece.color == color } if color
+    pieces
   end
 
   def in_bounds?(pos)
@@ -59,8 +69,8 @@ class Board
 
   # board.in_check?(black) # => true or false
   def in_check?(color)
-    king_pos = grid.flatten.reject(&:nil?).select { |piece| piece.class == King && piece.color == color }.first.pos
-    opposing = grid.flatten.reject(&:nil?).select { |piece| piece.color != color }
+    king_pos = pieces.select { |piece| piece.class == King && piece.color == color }.first.pos
+    opposing = pieces.select { |piece| piece.color != color }
     opposing.each do |piece|
       return true if piece.moves.include?(king_pos)
     end
@@ -69,7 +79,7 @@ class Board
   end
 
   def checkmate?(color)
-    pieces = grid.flatten.reject(&:nil?).select { |piece| piece.color == color }
+    pieces = pieces(color)
     in_check?(color) && pieces.all? { |piece| piece.valid_moves.empty? }
   end
 
