@@ -1,5 +1,5 @@
 class HumanPlayer
-  attr_reader :color, :name
+  attr_reader :color, :name, :display
 
   def initialize(name, board, color)
     @display = Display.new(board)

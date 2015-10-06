@@ -32,14 +32,26 @@ class Game
     until over?
       play
     end
+    game_over
   end
 
   def over?
-    board.checkmate?(:black) || board.checkmate?(:white)
+    board.checkmate?(:black) || board.checkmate?(:white) || board.draw?(current_player.color)
   end
 
   def switch_players
     self.current_player = (current_player == players[0] ? players[1] : players[0])
+  end
+
+  def game_over
+    current_player.display.render
+    if board.checkmate?(:black)
+      puts "White wins!"
+    elsif board.checkmate?(:white)
+      puts "Black wins!"
+    else
+      puts "It's a draw!"
+    end
   end
 
 end

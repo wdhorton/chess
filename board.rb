@@ -79,8 +79,8 @@ class Board
   end
 
   def checkmate?(color)
-    pieces = pieces(color)
-    in_check?(color) && pieces.all? { |piece| piece.valid_moves.empty? }
+    # if checkmate, color == loser
+    in_check?(color) && pieces(color).all? { |piece| piece.valid_moves.empty? }
   end
 
   def dup
@@ -91,5 +91,9 @@ class Board
       end
     end
     Board.new(result)
+  end
+
+  def draw?(color)
+    in_check?(color) && pieces(color).all? { |piece| piece.valid_moves.empty? }
   end
 end
