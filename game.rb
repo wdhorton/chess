@@ -34,7 +34,7 @@ class Game
       raise MoveError.new "No piece in that square!" if current_piece.nil?
       raise MoveError.new "That is not your piece!" if current_piece.color != current_player.color
       board.move(*input)
-      current_piece.promotion if current_piece.class == Pawn
+      current_piece.promotion(current_player) if current_piece.class == Pawn
       switch_players
     rescue MoveError => e
       puts e.message

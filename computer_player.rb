@@ -9,6 +9,7 @@ class ComputerPlayer
   end
 
   def play_turn
+    return take_piece unless take_piece.nil?
     own_pieces = board.pieces(color)
     valid_pieces = own_pieces.reject { |piece| piece.valid_moves.empty? }
     selected_piece = valid_pieces.sample
@@ -19,4 +20,17 @@ class ComputerPlayer
 
   end
 
+  def take_piece
+    own_pieces = board.pieces(color)
+    valid_pieces = own_pieces.reject { |piece| piece.valid_moves.empty? }
+    valid_pieces.each do |piece|
+      piece.valid_moves.each do |pos|
+        if board[pos]
+          return [piece.pos, pos] if board[pos].color != color
+        end
+      end
+    end
+
+    nil
+  end
 end

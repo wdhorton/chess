@@ -28,28 +28,32 @@ class Pawn < Piece
     super " ♟ "
   end
 
-  def promotion
+  def promotion(player)
     if (direction == :up && pos[0] == 0) || (direction == :down && pos[0] == 7)
-      prompt_promotion
+      prompt_promotion(player)
     end
   end
 
-  def prompt_promotion
-    b = Board.new(false)
+  def prompt_promotion(player)
+    if player.class == ComputerPlayer
+      board[pos] = Queen.new(board, pos, color)
+    else
+      b = Board.new(false)
 
-    Rook.new(b, [7, 0], color)
-    Knight.new(b, [7, 1], color)
-    Bishop.new(b, [7, 2], color)
-    Queen.new(b, [7, 3], color)
+      Rook.new(b, [7, 0], color)
+      Knight.new(b, [7, 1], color)
+      Bishop.new(b, [7, 2], color)
+      Queen.new(b, [7, 3], color)
 
 
-    d = Display.new(b)
-    input = nil
-    until input
-      d.render
-      puts "Select your new piece"
-      input = d.get_input
+      d = Display.new(b)
+      input = nil
+      until input
+        d.render
+        puts "Select your new piece"
+        input = d.get_input
+      end
+      board[pos] = b[input].class.new(board,pos,color)
     end
-    board[pos] = b[input].class.new(board,pos,color)
   end
 end
