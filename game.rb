@@ -1,6 +1,7 @@
 require_relative 'board.rb'
 require_relative 'human_player.rb'
 require_relative 'display.rb'
+require_relative 'computer_player.rb'
 
 class Game
   attr_accessor :board, :current_player
@@ -8,7 +9,7 @@ class Game
 
   def initialize
     @board = Board.new
-    @players = [HumanPlayer.new("Player 1", board, :white), HumanPlayer.new("Player 2", board, :black)]
+    @players = [HumanPlayer.new("Player 1", board, :white), ComputerPlayer.new("Player 2", board, :black)]
     @current_player = players[0]
   end
 

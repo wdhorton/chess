@@ -6,7 +6,7 @@ class Display
 
   def initialize(board)
     @board = board
-    @cursor_pos = [7, 0]
+    @cursor_pos = [board.grid.length - 1, 0]
     @selected = false
   end
 
