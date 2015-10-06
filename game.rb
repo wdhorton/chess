@@ -7,9 +7,13 @@ class Game
   attr_accessor :board, :current_player
   attr_reader :players
 
-  def initialize
+  def initialize(players_count)
     @board = Board.new
-    @players = [HumanPlayer.new("Player 1", board, :white), ComputerPlayer.new("Player 2", board, :black)]
+    if players_count == 1
+      @players = [HumanPlayer.new("Player 1", board, :white), ComputerPlayer.new("Computer", board, :black)]
+    elsif players_count == 2
+      @players = [HumanPlayer.new("Player 1", board, :white), HumanPlayer.new("Player 2", board, :black)]
+    end
     @current_player = players[0]
   end
 
@@ -47,9 +51,9 @@ class Game
   def game_over
     current_player.display.render
     if board.checkmate?(:black)
-      puts "White wins!"
+      puts "Checkmate! White wins!"
     elsif board.checkmate?(:white)
-      puts "Black wins!"
+      puts "Checkmate! Black wins!"
     else
       puts "It's a draw!"
     end
@@ -58,6 +62,9 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  g = Game.new
+  puts "How many players? (1 / 2) "
+  players_count = gets.chomp.to_i
+
+  g = Game.new(players_count)
   g.run
 end

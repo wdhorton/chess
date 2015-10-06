@@ -1,5 +1,9 @@
 
 class Piece
+  def self.opponent(color)
+    color == :white ? :black : :white
+  end
+
   attr_accessor :board, :pos
   attr_reader :color
 
@@ -10,6 +14,7 @@ class Piece
   end
 
   def moves
+    raise NotImplementedError
   end
 
   def valid_moves
@@ -28,6 +33,14 @@ class Piece
 
   def on_board?(pos)
     pos[0].between?(0,7) && pos[1].between?(0,7)
+  end
+
+  def empty?(pos)
+    board[pos].nil?
+  end
+
+  def opponent_there?(pos)
+    board[pos].color != color
   end
 
 end
@@ -55,7 +68,10 @@ class SteppingPiece < Piece
     result = []
     move_dirs.each do |dx, dy|
       new_pos = [pos[0] + dx, pos[1] + dy]
-      result << new_pos if on_board?(new_pos) && (board[new_pos].nil? || board[new_pos].color != color)
+
+      if on_board?(new_pos) && (empty?(new_pos) || opponent_there?(new_pos))
+        result << new_pos
+      end
     end
 
     result
@@ -123,32 +139,25 @@ end
 class Pawn < Piece
   def initialize(board, pos, color)
     super(board, pos, color)
-    @starting_pos = pos
+    @start_pos = pos
   end
 
   def direction
-    @starting_pos[0] == 1 ? :down : :up
+    @start_pos[0] == 1 ? :down : :up
   end
 
   def moves
     result = []
-    if direction == :up
-       result << [ pos[0] - 1, pos[1]] if board[[pos[0] - 1, pos[1]]].nil?
-       result << [ pos[0] - 2, pos[1]] if pos == @starting_pos && board[[pos[0] - 2, pos[1]]].nil?
-       new_pos = [ pos[0] - 1, pos[1] - 1]
-       result << new_pos  if board[new_pos] && board[new_pos].color != color
-       new_pos = [ pos[0] - 1, pos[1] + 1]
-       result << new_pos  if board[new_pos] && board[new_pos].color != color
-
-     else
-       result << [pos[0] + 1, pos[1]] if board[[pos[0] + 1, pos[1]]].nil?
-       result << [pos[0] + 2, pos[1]] if pos == @starting_pos && board[[pos[0] + 2, pos[1]]].nil?
-       new_pos = [ pos[0] + 1, pos[1] - 1]
-       result << new_pos  if board[new_pos] && board[new_pos].color != color
-       new_pos = [ pos[0] + 1, pos[1] + 1]
-       result << new_pos  if board[new_pos] && board[new_pos].color != color
-     end
-     result
+    dy = 1
+    x, y = pos
+    dy *= -1 if direction == :up
+    result << [x + dy, y] if empty?([x + dy, y])
+    result << [x + (2 * dy), y] if pos == @start_pos && empty?([x + 2 * dy, y])
+    new_pos = [x + dy, y - 1]
+    result << new_pos  if board[new_pos] && opponent_there?(new_pos)
+    new_pos = [x + dy, y + 1]
+    result << new_pos  if board[new_pos] && opponent_there?(new_pos)
+    result
   end
 
   def to_s
@@ -156,14 +165,20 @@ class Pawn < Piece
   end
 
   def promotion
-    if (direction == :up && pos.first == 0) || (direction == :down && pos.first == 7)
+    if (direction == :up && pos[0] == 0) || (direction == :down && pos[0] == 7)
       prompt_promotion
     end
   end
 
   def prompt_promotion
-    b = Board.new([[Rook.new(nil, [0, 0], color), Knight.new(nil, [0, 1], color), Bishop.new(nil, [0, 2], color),
-      Queen.new(nil, [0, 3], color)]])
+    b = Board.new([
+      [
+        Rook.new(nil, [0, 0], color),
+        Knight.new(nil, [0, 1], color),
+        Bishop.new(nil, [0, 2], color),
+        Queen.new(nil, [0, 3], color)
+      ]
+    ])
     d = Display.new(b)
     input = nil
     until input
@@ -171,15 +186,6 @@ class Pawn < Piece
       puts "Select your new piece"
       input = d.get_input #POS
     end
-    case input
-    when [0,0]
-      board[pos] = Rook.new(board, pos, color)
-    when [0,1]
-      board[pos] = Knight.new(board, pos, color)
-    when [0,2]
-      board[pos] = Bishop.new(board, pos, color)
-    when [0,3]
-      board[pos] = Queen.new(board, pos, color)
-    end
+    board[pos] = b[input].class.new(board,pos,color)
   end
 end
