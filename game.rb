@@ -2,13 +2,22 @@ require_relative 'board.rb'
 require_relative 'human_player.rb'
 require_relative 'display.rb'
 require_relative 'computer_player.rb'
+require 'yaml'
 
 class Game
+
+  def self.load
+    puts "Enter file name to load"
+    input = gets.chomp
+    file = File.read(input)
+    YAML.load(file).run
+  end
+
   attr_accessor :board, :current_player
   attr_reader :players
 
   def initialize(players_count)
-    @board = Board.new
+    @board = Board.new(true)
     if players_count == 1
       @players = [HumanPlayer.new("Player 1", board, :white), ComputerPlayer.new("Computer", board, :black)]
     elsif players_count == 2
@@ -20,6 +29,7 @@ class Game
   def play
     begin
       input = current_player.play_turn
+      save if input == :save
       current_piece = board[input[0]]
       raise MoveError.new "No piece in that square!" if current_piece.nil?
       raise MoveError.new "That is not your piece!" if current_piece.color != current_player.color
@@ -59,12 +69,26 @@ class Game
     end
   end
 
+  def save
+    puts "Please enter a file name"
+    filename = gets.chomp
+    f = File.new(filename, "w")
+    f.write(self.to_yaml)
+    f.close
+    exit 0
+  end
+
 end
 
 if __FILE__ == $PROGRAM_NAME
-  puts "How many players? (1 / 2) "
-  players_count = gets.chomp.to_i
+  puts "Load game? (y/n)"
+  input = gets.chomp.downcase
+  if input == "y"
+    Game.load
+  else
+    puts "How many players? (1 / 2) "
+    players_count = gets.chomp.to_i
 
-  g = Game.new(players_count)
-  g.run
+    Game.new(players_count).run
+  end
 end

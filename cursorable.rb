@@ -3,14 +3,7 @@ require "io/console"
 module Cursorable
   KEYMAP = {
     " " => :space,
-    "h" => :left,
-    "j" => :down,
-    "k" => :up,
-    "l" => :right,
-    "w" => :up,
-    "a" => :left,
-    "s" => :down,
-    "d" => :right,
+    "s" => :save,
     "\t" => :tab,
     "\r" => :return,
     "\n" => :newline,
@@ -41,10 +34,21 @@ module Cursorable
     when :ctrl_c
       exit 0
     when :return, :space
+      if @second_selection
+        @second_selection = nil
+        @selected = @cursor_pos
+      elsif @selected
+        @selected = nil
+        @second_selection = @cursor_pos
+      else
+        @selected = @cursor_pos
+      end
       @cursor_pos
     when :left, :right, :up, :down
       update_pos(MOVES[key])
       nil
+    when :save
+      :save
     else
       nil
     end

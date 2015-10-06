@@ -7,7 +7,8 @@ class Display
   def initialize(board)
     @board = board
     @cursor_pos = [board.grid.length - 1, 0]
-    @selected = false
+    @selected = nil
+    @second_selection = nil
   end
 
   def build_grid
@@ -27,6 +28,8 @@ class Display
   def colors_for(i, j)
     if [i, j] == @cursor_pos
       bg = :light_red
+    elsif [i, j] == @selected
+      bg = :blue
     elsif (i + j).odd?
       bg = :light_black
     else
@@ -37,7 +40,7 @@ class Display
 
   def render
     system("clear")
-    puts "Arrow keys, WASD, or vim to move, space or enter to confirm."
+    puts "Arrow keys to move, space or enter to confirm, s to save."
     build_grid.each { |row| puts row.join }
     nil
   end

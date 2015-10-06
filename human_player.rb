@@ -13,6 +13,7 @@ class HumanPlayer
       @display.render
       puts "It is #{name}'s turn"
       input = @display.get_input
+      return :save if input == :save
       result << input if input
     end
 

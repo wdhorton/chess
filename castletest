@@ -1,0 +1,268 @@
+--- !ruby/object:Game
+board: &1 !ruby/object:Board
+  grid:
+  - - !ruby/object:Rook
+      board: *1
+      pos:
+      - 0
+      - 0
+      color: :black
+      moved: false
+    - 
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 0
+      - 2
+      color: :black
+    - !ruby/object:Queen
+      board: *1
+      pos:
+      - 0
+      - 3
+      color: :black
+    - !ruby/object:King
+      board: *1
+      pos:
+      - 0
+      - 4
+      color: :black
+      moved: false
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 0
+      - 5
+      color: :black
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 0
+      - 6
+      color: :black
+    - !ruby/object:Rook
+      board: *1
+      pos:
+      - 0
+      - 7
+      color: :black
+      moved: false
+  - - 
+    - !ruby/object:Pawn
+      board: *1
+      pos: &2
+      - 1
+      - 1
+      color: :black
+      start_pos: *2
+    - !ruby/object:Pawn
+      board: *1
+      pos: &3
+      - 1
+      - 2
+      color: :black
+      start_pos: *3
+    - !ruby/object:Pawn
+      board: *1
+      pos: &4
+      - 1
+      - 3
+      color: :black
+      start_pos: *4
+    - !ruby/object:Pawn
+      board: *1
+      pos: &5
+      - 1
+      - 4
+      color: :black
+      start_pos: *5
+    - !ruby/object:Pawn
+      board: *1
+      pos: &6
+      - 1
+      - 5
+      color: :black
+      start_pos: *6
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos: &7
+      - 1
+      - 7
+      color: :black
+      start_pos: *7
+  - - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 2
+      - 0
+      color: :white
+    - 
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 2
+      - 2
+      color: :black
+    - 
+    - 
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 2
+      - 6
+      color: :black
+      start_pos:
+      - 1
+      - 6
+    - 
+  - - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+  - - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+  - - 
+    - 
+    - 
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos:
+      - 5
+      - 4
+      color: :white
+      start_pos:
+      - 6
+      - 4
+    - 
+    - 
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 5
+      - 7
+      color: :white
+  - - !ruby/object:Pawn
+      board: *1
+      pos: &8
+      - 6
+      - 0
+      color: :white
+      start_pos: *8
+    - !ruby/object:Pawn
+      board: *1
+      pos: &9
+      - 6
+      - 1
+      color: :white
+      start_pos: *9
+    - !ruby/object:Pawn
+      board: *1
+      pos: &10
+      - 6
+      - 2
+      color: :white
+      start_pos: *10
+    - !ruby/object:Pawn
+      board: *1
+      pos: &11
+      - 6
+      - 3
+      color: :white
+      start_pos: *11
+    - 
+    - !ruby/object:Pawn
+      board: *1
+      pos: &12
+      - 6
+      - 5
+      color: :white
+      start_pos: *12
+    - !ruby/object:Pawn
+      board: *1
+      pos: &13
+      - 6
+      - 6
+      color: :white
+      start_pos: *13
+    - !ruby/object:Pawn
+      board: *1
+      pos: &14
+      - 6
+      - 7
+      color: :white
+      start_pos: *14
+  - - !ruby/object:Rook
+      board: *1
+      pos:
+      - 7
+      - 0
+      color: :white
+      moved: false
+    - !ruby/object:Knight
+      board: *1
+      pos:
+      - 7
+      - 1
+      color: :white
+    - !ruby/object:Bishop
+      board: *1
+      pos:
+      - 7
+      - 2
+      color: :white
+    - !ruby/object:Queen
+      board: *1
+      pos:
+      - 7
+      - 3
+      color: :white
+    - !ruby/object:King
+      board: *1
+      pos:
+      - 7
+      - 4
+      color: :white
+      moved: false
+    - 
+    - 
+    - !ruby/object:Rook
+      board: *1
+      pos:
+      - 7
+      - 7
+      color: :white
+      moved: false
+players:
+- &15 !ruby/object:HumanPlayer
+  display: !ruby/object:Display
+    board: *1
+    cursor_pos:
+    - 3
+    - 0
+    selected: false
+  name: Player 1
+  color: :white
+- !ruby/object:ComputerPlayer
+  board: *1
+  display: !ruby/object:Display
+    board: *1
+    cursor_pos:
+    - 7
+    - 0
+    selected: false
+  name: Computer
+  color: :black
+current_player: *15

@@ -1,4 +1,10 @@
-require_relative 'piece.rb'
+require_relative './pieces/bishop.rb'
+require_relative './pieces/king.rb'
+require_relative './pieces/knight.rb'
+require_relative './pieces/pawn.rb'
+require_relative './pieces/queen.rb'
+require_relative './pieces/rook.rb'
+require_relative './pieces/piece.rb'
 require_relative 'errors.rb'
 require 'byebug'
 
@@ -10,32 +16,29 @@ class Board
 
   attr_reader :grid
 
-  def initialize(grid = Board.new_grid)
-    @grid = grid
-    populate if pieces.empty?
-    pieces.map { |piece| piece.board = self }
+
+  def initialize(fill)
+    @grid = Board.new_grid
+    populate if fill
   end
 
   def populate
     [0, 1, 6, 7].each do |row_index|
       if row_index == 1 || row_index == 6
         color = (row_index == 1 ? :black : :white)
-        grid[row_index].map!.with_index do |_, col_index|
+        (0..7).each do |col_index|
           Pawn.new(self, [row_index, col_index], color)
         end
       elsif row_index == 0 || row_index == 7
         color = (row_index == 0 ? :black : :white)
-        @grid[row_index] =
-        [
-          Rook.new(self, [row_index, 0], color),
-          Knight.new(self, [row_index, 1], color),
-          Bishop.new(self, [row_index, 2], color),
-          Queen.new(self, [row_index, 3], color),
-          King.new(self, [row_index, 4], color),
-          Bishop.new(self, [row_index, 5], color),
-          Knight.new(self, [row_index, 6], color),
-          Rook.new(self, [row_index, 7], color)
-        ]
+        Rook.new(self, [row_index, 0], color)
+        Knight.new(self, [row_index, 1], color)
+        Bishop.new(self, [row_index, 2], color)
+        Queen.new(self, [row_index, 3], color)
+        King.new(self, [row_index, 4], color)
+        Bishop.new(self, [row_index, 5], color)
+        Knight.new(self, [row_index, 6], color)
+        Rook.new(self, [row_index, 7], color)
       end
     end
   end
@@ -43,7 +46,7 @@ class Board
   def pieces(color = nil, type = nil)
     pieces = grid.flatten.reject(&:nil?)
     pieces = pieces.select { |piece| piece.color == color } if color
-    # pieces = pieces.select { |piece| piece.class == type } if type
+    pieces = pieces.select { |piece| piece.class == type } if type
     pieces
   end
 
@@ -67,6 +70,21 @@ class Board
     raise MoveError.new message unless piece.moves.include?(end_pos)
     message = "You can't leave yourself in check!"
     raise MoveError.new message unless piece.valid_moves.include?(end_pos)
+    if piece.class == King && !piece.castle.empty?
+      x, y = end_pos
+      if y == 2
+        rook = self[[x, y - 2]]    #save rook as variable 'rook'
+        self[[x, y + 1]] = rook
+        rook.pos = [x, y + 1]
+        self[[x, y - 2]] = nil
+      elsif y == 6
+        rook = self[[x, y + 1]]    #save rook as variable 'rook'
+        self[[x, y - 1]] = rook
+        rook.pos = [x, y - 1]
+        self[[x, y + 1]] = nil
+      end
+    end
+    piece.moved = true if piece.class == King || piece.class == Rook
     self[end_pos] = piece
     piece.pos = end_pos
     self[start_pos] = nil
@@ -81,7 +99,7 @@ class Board
 
   # board.in_check?(black) # => true or false
   def in_check?(color)
-    king_pos = pieces(color).select { |piece| piece.class == King }.first.pos        #
+    king_pos = pieces(color, King).first.pos        #
     opposing = pieces(Piece.opponent(color))
     opposing.each do |piece|
       return true if piece.moves.include?(king_pos)
@@ -96,13 +114,9 @@ class Board
   end
 
   def dup
-    result = Array.new(8) { Array.new(8) }
-    grid.each.with_index do |row, x|
-      row.each.with_index do |el, y|
-        result[x][y] = (el ? el.dup : nil)
-      end
-    end
-    Board.new(result)
+    new_board = Board.new(false)
+    pieces.each { |piece| piece.class.new(new_board, piece.pos, piece.color) }
+    new_board
   end
 
   def draw?(color)
