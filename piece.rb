@@ -68,7 +68,7 @@ class Bishop < SlidingPiece
   end
 
   def to_s
-    super "B"
+    super " ♝ "
   end
 
 end
@@ -79,7 +79,7 @@ class Rook < SlidingPiece
   end
 
   def to_s
-    super "R"
+    super " ♜ "
   end
 
 end
@@ -91,7 +91,7 @@ class Queen < SlidingPiece
   end
 
   def to_s
-    super "Q"
+    super " ♛ "
   end
 
 end
@@ -103,7 +103,7 @@ class Knight < SteppingPiece
   end
 
   def to_s
-    super "N"
+    super " ♞ "
   end
 
 end
@@ -115,7 +115,7 @@ class King < SteppingPiece
   end
 
   def to_s
-    super "K"
+    super " ♚ "
   end
 
 end
@@ -133,18 +133,53 @@ class Pawn < Piece
   def moves
     result = []
     if direction == :up
-       result << [ pos[0] - 1, pos[1]]
-       result << [ pos[0] - 2, pos[1]] if pos == @starting_pos
+       result << [ pos[0] - 1, pos[1]] if board[[pos[0] - 1, pos[1]]].nil?
+       result << [ pos[0] - 2, pos[1]] if pos == @starting_pos && board[[pos[0] - 2, pos[1]]].nil?
+       new_pos = [ pos[0] - 1, pos[1] - 1]
+       result << new_pos  if board[new_pos] && board[new_pos].color != color
+       new_pos = [ pos[0] - 1, pos[1] + 1]
+       result << new_pos  if board[new_pos] && board[new_pos].color != color
+
      else
-       result << [pos[0] + 1, pos[1]]
-       result << [pos[0] + 2, pos[1]] if pos == @starting_pos
+       result << [pos[0] + 1, pos[1]] if board[[pos[0] + 1, pos[1]]].nil?
+       result << [pos[0] + 2, pos[1]] if pos == @starting_pos && board[[pos[0] + 2, pos[1]]].nil?
+       new_pos = [ pos[0] + 1, pos[1] - 1]
+       result << new_pos  if board[new_pos] && board[new_pos].color != color
+       new_pos = [ pos[0] + 1, pos[1] + 1]
+       result << new_pos  if board[new_pos] && board[new_pos].color != color
      end
      result
   end
 
   def to_s
-    super "P"
+    super " ♟ "
   end
 
+  def promotion
+    if (direction == :up && pos.first == 0) || (direction == :down && pos.first == 7)
+      prompt_promotion
+    end
+  end
 
+  def prompt_promotion
+    b = Board.new([[Rook.new(nil, [0, 0], color), Knight.new(nil, [0, 1], color), Bishop.new(nil, [0, 2], color),
+      Queen.new(nil, [0, 3], color)]])
+    d = Display.new(b)
+    input = nil
+    until input
+      d.render
+      puts "Select your new piece"
+      input = d.get_input #POS
+    end
+    case input
+    when [0,0]
+      board[pos] = Rook.new(board, pos, color)
+    when [0,1]
+      board[pos] = Knight.new(board, pos, color)
+    when [0,2]
+      board[pos] = Bishop.new(board, pos, color)
+    when [0,3]
+      board[pos] = Queen.new(board, pos, color)
+    end
+  end
 end

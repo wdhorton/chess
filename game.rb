@@ -15,8 +15,11 @@ class Game
   def play
     begin
       input = current_player.play_turn
-      raise MoveError.new "That is not your piece!" if board[input[0]].color != current_player.color
+      current_piece = board[input[0]]
+      raise MoveError.new "No piece in that square!" if current_piece.nil?
+      raise MoveError.new "That is not your piece!" if current_piece.color != current_player.color
       board.move(*input)
+      current_piece.promotion if current_piece.class == Pawn
       switch_players
     rescue MoveError => e
       puts e.message
