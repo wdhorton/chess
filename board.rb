@@ -43,7 +43,7 @@ class Board
   def pieces(color = nil, type = nil)
     pieces = grid.flatten.reject(&:nil?)
     pieces = pieces.select { |piece| piece.color == color } if color
-    pieces = pieces.select { |piece| piece.class == type } if type
+    # pieces = pieces.select { |piece| piece.class == type } if type
     pieces
   end
 
@@ -81,7 +81,7 @@ class Board
 
   # board.in_check?(black) # => true or false
   def in_check?(color)
-    king_pos = pieces(color, King).first.pos        #
+    king_pos = pieces(color).select { |piece| piece.class == King }.first.pos        #
     opposing = pieces(Piece.opponent(color))
     opposing.each do |piece|
       return true if piece.moves.include?(king_pos)
@@ -99,7 +99,7 @@ class Board
     result = Array.new(8) { Array.new(8) }
     grid.each.with_index do |row, x|
       row.each.with_index do |el, y|
-        result[x][y] = (el ? el : nil)
+        result[x][y] = (el ? el.dup : nil)
       end
     end
     Board.new(result)

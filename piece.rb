@@ -59,7 +59,7 @@ class SlidingPiece < Piece
       result << a if on_board?(a) && board[a].color != color
     end
 
-    result
+  result
   end
 end
 
